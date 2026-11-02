@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+import sqlite3
 
 from app.database import DEFAULT_DATABASE_PATH, connect
 from app.validaciones import IntervaloUTC, validar_intervalo
@@ -15,6 +16,25 @@ class ResultadoDisponibilidad:
     equipo_id: str
     disponible: bool
     reserva_conflictiva_id: str | None = None
+
+
+def buscar_reserva_conflictiva(
+    connection: sqlite3.Connection,
+    equipo_id: str,
+    intervalo: IntervaloUTC,
+) -> sqlite3.Row | None:
+    return connection.execute(
+        """
+        SELECT id
+        FROM reservas
+        WHERE equipo_id = ?
+          AND estado = 'activa'
+          AND inicio_utc < ?
+          AND fin_utc > ?
+        LIMIT 1
+        """,
+        (equipo_id, intervalo.fin_utc, intervalo.inicio_utc),
+    ).fetchone()
 
 
 def consultar_disponibilidad(
@@ -42,18 +62,7 @@ def consultar_disponibilidad(
         if equipment is None:
             raise EquipoNoEncontradoError(f"El equipo {equipo_id} no existe.")
 
-        conflict = connection.execute(
-            """
-            SELECT id
-            FROM reservas
-            WHERE equipo_id = ?
-              AND estado = 'activa'
-              AND inicio_utc < ?
-              AND fin_utc > ?
-            LIMIT 1
-            """,
-            (equipo_id, intervalo.fin_utc, intervalo.inicio_utc),
-        ).fetchone()
+        conflict = buscar_reserva_conflictiva(connection, equipo_id, intervalo)
         if conflict is not None:
             return ResultadoDisponibilidad(
                 equipo_id=equipo_id,

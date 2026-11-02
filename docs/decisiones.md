@@ -17,3 +17,16 @@
 - **Pruebas ejecutadas:** `python -m pytest -q tests/test_validaciones.py tests/test_disponibilidad.py` (primera ejecución: 1 fallida y 27 aprobadas; repetición tras la corrección: 28 aprobadas; ejecución final: 28 aprobadas).
 - **Pruebas de etapa 1:** `python -m pytest -q tests/test_database.py`; 4 pruebas aprobadas.
 - **Aceptación humana:** etapa 2 revisada y aceptada. Las 32 pruebas de las etapas 1 y 2 fueron ejecutadas conjuntamente y aprobadas.
+
+### Etapa 3: creación y cancelación de reservas
+
+- **Objetivo:** implementar las operaciones de creación y cancelación de reservas, respetando las reglas de disponibilidad y conservando el historial.
+- **Delegación al agente:** se solicitó analizar la implementación existente y proponer una solución antes de modificar archivos. Luego de revisar la propuesta, se autorizó la implementación con precisiones sobre el esquema, la conservación de datos y el manejo de errores.
+- **Archivos modificados o creados:** `app/reservas.py`, `app/disponibilidad.py` y `tests/test_reservas.py`.
+- **Resultado:** se implementó la creación de reservas con identificador UUID, validación del solicitante, verificación transaccional de disponibilidad y cancelación lógica con registro del instante en UTC. Se extrajo un helper compartido para detectar superposiciones sin duplicar la consulta SQL.
+- **Adaptación específica:** se utilizó `BEGIN IMMEDIATE` para mantener dentro de una misma transacción la comprobación de conflictos y la inserción de una reserva. La cancelación conserva los datos originales y actualiza únicamente el estado y el instante de cancelación.
+- **Incidencias durante el desarrollo:** las primeras ejecuciones detectaron errores de indentación y problemas en algunas pruebas. El agente realizó correcciones y volvió a ejecutar las pruebas hasta obtener resultados satisfactorios.
+- **Verificación ejecutada:** `python -m pytest -v`.
+- **Resultado de verificación:** 14 pruebas específicas de reservas aprobadas y 46 pruebas totales aprobadas.
+- **Base de datos:** no se modificó el esquema ni se reinició la base local. Las pruebas se ejecutaron utilizando bases de datos temporales.
+- **Decisión humana:** etapa 3 revisada y aceptada después de inspeccionar los tres archivos y verificar los resultados finales de las pruebas.
