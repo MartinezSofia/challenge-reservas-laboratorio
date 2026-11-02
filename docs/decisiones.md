@@ -30,3 +30,15 @@
 - **Resultado de verificación:** 14 pruebas específicas de reservas aprobadas y 46 pruebas totales aprobadas.
 - **Base de datos:** no se modificó el esquema ni se reinició la base local. Las pruebas se ejecutaron utilizando bases de datos temporales.
 - **Decisión humana:** etapa 3 revisada y aceptada después de inspeccionar los tres archivos y verificar los resultados finales de las pruebas.
+
+### Etapa 4: integración de la interfaz de consola
+
+- **Objetivo:** integrar las funcionalidades desarrolladas en las etapas anteriores mediante una interfaz de consola que permita utilizar el sistema de reservas.
+- **Delegación al agente:** se solicitó analizar la arquitectura existente y proponer una solución antes de autorizar modificaciones. Luego de revisar la propuesta, se autorizó la creación de una interfaz de consola y sus pruebas automatizadas.
+- **Archivos creados:** `app/main.py` y `tests/test_main.py`.
+- **Resultado:** se implementó un menú interactivo que permite consultar disponibilidad, crear reservas, cancelar reservas y salir del sistema. La interfaz reutiliza las operaciones de los módulos existentes, sin duplicar las reglas de negocio.
+- **Adaptaciones específicas:** se incorporó la posibilidad de inyectar la ruta de la base de datos y las funciones de entrada y salida para facilitar las pruebas. También se agregó el manejo de finalización de entrada (`EOFError`) durante cualquier operación.
+- **Incidencias durante el desarrollo:** una primera ejecución de las pruebas detectó una diferencia de capitalización en una aserción de fecha inválida. Se corrigió la comparación y se volvieron a ejecutar las pruebas.
+- **Verificación ejecutada:** `python -m pytest -q tests/test_main.py` y `python -m pytest -v`.
+- **Resultado de verificación:** 14 pruebas de consola aprobadas y 60 pruebas totales aprobadas.
+- **Decisión humana:** etapa 4 revisada y aceptada luego de inspeccionar el código, las pruebas y los resultados de ejecución.
