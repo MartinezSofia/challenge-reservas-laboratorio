@@ -8,3 +8,12 @@
 - **Pruebas ejecutadas:** `python -m pytest tests/test_database.py -v`
 - **Resultado de las pruebas:** 4 pruebas aprobadas, 0 fallidas. Ejecución realizada con Python 3.14.7 y pytest 9.2.0 en Windows.
 - **Aceptación humana:** etapa 1 revisada y aceptada. Se autoriza continuar con la etapa 2.
+
+## Etapa 2: validaciones temporales y disponibilidad
+
+- **Objetivo:** validar fechas, horas e intervalos en UTC-3, normalizar los instantes a UTC y consultar disponibilidad según reservas activas.
+- **Instrucción:** implementar exclusivamente `app/validaciones.py`, `app/disponibilidad.py`, sus pruebas y este registro; permitir inicio igual al momento actual; diferenciar intervalo inválido, equipo inexistente, equipo ocupado y disponible; no implementar creación, cancelación ni interfaz.
+- **Resultado:** implementados los validadores temporales y la consulta SQLite con el criterio de superposición acordado. Se rechazó explícitamente `24:00` después de que la primera ejecución de pruebas detectara que `time.fromisoformat()` lo aceptaba. La aceptación humana queda pendiente de revisión.
+- **Pruebas ejecutadas:** `python -m pytest -q tests/test_validaciones.py tests/test_disponibilidad.py` (primera ejecución: 1 fallida y 27 aprobadas; repetición tras la corrección: 28 aprobadas; ejecución final: 28 aprobadas).
+- **Pruebas de etapa 1:** `python -m pytest -q tests/test_database.py`; 4 pruebas aprobadas.
+- **Aceptación humana:** etapa 2 revisada y aceptada. Las 32 pruebas de las etapas 1 y 2 fueron ejecutadas conjuntamente y aprobadas.
