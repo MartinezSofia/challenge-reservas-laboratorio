@@ -1,56 +1,117 @@
-
 # Preparación y uso del agente
 
-## Entorno
+## 1. Entorno
 
-- Editor: Visual Studio Code.
-- Agente: GitHub Copilot Agent.
-- Extensión: GitHub Copilot Chat.
-- Lenguaje del proyecto: Python 3.14.7.
-- Control de versiones: Git 2.53.0.windows.3.
+- **Editor:** Visual Studio Code.
+- **Agente:** GitHub Copilot Agent.
+- **Extensión:** GitHub Copilot Chat.
+- **Lenguaje del proyecto:** Python 3.14.7.
+- **Sistema de control de versiones:** Git 2.53.0.windows.3.
+- **Sistema operativo:** Windows 11.
 
-## Modelo
+## 2. Modelo utilizado
 
-- Modelo seleccionado: pendiente de verificar en VS Code.
-- Versión o identificador: pendiente de verificar.
-- Función: asistencia y delegación de tareas de programación.
+- **Modelo seleccionado:** no se pudo verificar el nombre desde la información disponible en el entorno.
+- **Versión o identificador:** no disponible.
+- **Función:** asistencia en el análisis, implementación, corrección y verificación del sistema de reservas.
 
-## Instrucciones
+No se atribuye al agente un modelo o versión que no haya podido comprobarse.
 
-Se utiliza el archivo AGENTS.md como contexto permanente del proyecto.
+## 3. Instrucciones y contexto suministrado
 
-## Permisos y controles
+Se utilizó el archivo `AGENTS.md` como contexto permanente del proyecto. Este archivo establece:
 
-El agente puede proponer y realizar modificaciones sobre los archivos del repositorio, ejecutar pruebas y solicitar autorización para acciones que requieran aprobación.
+- Objetivo y alcance del sistema.
+- Inventario fijo de equipos.
+- Tecnologías y estructura de carpetas.
+- Reglas de disponibilidad y superposición de reservas.
+- Validaciones requeridas.
+- Persistencia mediante SQLite.
+- Requisitos de pruebas automatizadas.
+- Restricciones para evitar modificaciones no autorizadas.
 
-El usuario revisa los cambios antes de aceptarlos.
+El agente recibió instrucciones para trabajar por etapas, realizar cambios acotados, ejecutar las pruebas correspondientes y no inventar resultados. También se estableció que debía solicitar autorización antes de realizar cambios fuera del alcance acordado o acciones destructivas.
 
-## Adaptación específica
+## 4. Permisos y controles humanos
 
-Se establecieron instrucciones explícitas para:
-- Permitir reservas consecutivas.
-- Rechazar intervalos superpuestos.
-- Mantener la persistencia de reservas canceladas.
-- No eliminar registros al cancelar.
+El agente trabajó en modo Agent desde Visual Studio Code, con capacidad para leer y modificar archivos del repositorio y ejecutar comandos de terminal.
 
-## Evidencias
+El trabajo se organizó en etapas. Antes de implementar cada una, se revisó la propuesta del agente y se autorizaron los archivos y cambios correspondientes.
 
-Pendiente de incorporar:
-- Primera interacción con el agente.
-- Modelo utilizado, cuando sea visible.
-- Instrucciones y resultados de las delegaciones.
-- Revisiones humanas.
+Los controles humanos incluyeron:
 
-## Primera interacción documentada
+- Revisar las propuestas antes de autorizar la implementación.
+- Inspeccionar los archivos modificados.
+- Comprobar que se respetaran las reglas de negocio.
+- Ejecutar y revisar las pruebas automatizadas.
+- Realizar pruebas manuales de los flujos principales.
+- Decidir la aceptación de cada etapa antes de continuar.
 
-**Objetivo:** verificar que el agente comprendiera las instrucciones del proyecto antes de comenzar el desarrollo.
+Las operaciones de Git, como los commits y los envíos al repositorio remoto, fueron realizadas y verificadas por el usuario.
 
-**Contexto suministrado:** archivo AGENTS.md con descripción del sistema, funcionalidades, reglas de negocio, tecnologías y pruebas requeridas.
+## 5. Adaptaciones específicas del proyecto
 
-**Instrucción:** se solicitó leer y analizar AGENTS.md sin modificar archivos.
+Durante el desarrollo se establecieron y verificaron las siguientes adaptaciones:
 
-**Resultado:** el agente identificó correctamente las funcionalidades, reglas de superposición, persistencia y pruebas. También detectó ambigüedades técnicas y una diferencia en el nombre de la carpeta de pruebas.
+- Permitir reservas consecutivas en una misma unidad.
+- Rechazar reservas activas con intervalos superpuestos.
+- Permitir reservas simultáneas en unidades diferentes.
+- Conservar los registros y datos originales al cancelar una reserva.
+- Liberar el intervalo de una reserva cancelada.
+- Utilizar `BEGIN IMMEDIATE` para mantener la comprobación de disponibilidad y la inserción dentro de una misma transacción.
+- Permitir el inicio de una reserva exactamente en el momento actual.
+- Manejar `EOFError` durante las operaciones de consola para finalizar la aplicación de manera controlada.
+- Utilizar bases de datos temporales en las pruebas para evitar modificar la base de datos local.
 
-**Decisión humana:** se aceptó el análisis y se decidió resolver las ambigüedades antes de autorizar el desarrollo.
+## 6. Episodios de delegación y revisión
 
-**Evidencia:** primera interacción registrada en el historial de GitHub Copilot Chat.
+### Episodio 1. Análisis inicial y definición técnica
+
+**Objetivo:** comprobar que el agente comprendiera el alcance y las reglas del proyecto antes de comenzar el desarrollo.
+
+**Contexto suministrado:** archivo `AGENTS.md`, con las funcionalidades, reglas de negocio, tecnologías, estructura y pruebas requeridas.
+
+**Instrucción y acción del agente:** se solicitó leer y analizar las instrucciones sin modificar archivos. El agente identificó las funcionalidades principales, las reglas de superposición y persistencia, y aspectos técnicos que necesitaban definirse antes de implementar.
+
+**Resultado:** se obtuvo un análisis inicial y se identificó la necesidad de precisar los supuestos técnicos.
+
+**Decisión humana:** se aceptó el análisis y se resolvieron los supuestos antes de autorizar la implementación.
+
+**Evidencias:** `AGENTS.md`, `docs/supuestos-tecnicos.md` y registro de la primera interacción en el historial de GitHub Copilot Chat.
+
+### Episodio 2. Implementación de creación y cancelación
+
+**Objetivo:** implementar las operaciones de creación y cancelación de reservas, respetando las reglas de disponibilidad y la conservación del historial.
+
+**Contexto suministrado:** módulos existentes de base de datos, validaciones temporales y consulta de disponibilidad.
+
+**Instrucción y acción del agente:** primero se solicitó analizar la implementación existente y proponer una solución. Después de revisar la propuesta, se autorizó trabajar sobre los archivos acordados, sin modificar el esquema de la base de datos.
+
+**Resultado:** se implementó la creación de reservas con UUID, la verificación transaccional de disponibilidad y la cancelación lógica. Se incorporó un helper compartido para detectar conflictos y se agregaron pruebas específicas.
+
+**Decisión humana:** se aprobaron las precisiones sobre la conservación de datos, el manejo de errores y el uso de transacciones. La etapa fue aceptada después de revisar los archivos y comprobar las pruebas.
+
+**Evidencias:** `app/reservas.py`, `app/disponibilidad.py`, `tests/test_reservas.py` y `docs/decisiones.md`.
+
+### Episodio 3. Corrección del manejo de fin de entrada en la consola
+
+**Objetivo:** asegurar que la aplicación pudiera finalizar de manera controlada cuando se produjera un fin de entrada durante una operación, no solamente al seleccionar una opción del menú.
+
+**Contexto suministrado:** implementación de la interfaz de consola y pruebas existentes de `app/main.py` y `tests/test_main.py`.
+
+**Instrucción y acción del agente:** se solicitó ampliar el manejo de `EOFError` alrededor del despacho completo de las operaciones y fortalecer las pruebas, manteniendo los cambios limitados a los dos archivos autorizados.
+
+**Resultado:** el agente incorporó el manejo de fin de entrada durante las operaciones y agregó pruebas para comprobar ese comportamiento, además de mejorar otros casos de prueba de la interfaz.
+
+**Incidencias:** una primera ejecución detectó una diferencia de capitalización en una aserción de fecha inválida. Se corrigió y se repitieron las pruebas.
+
+**Decisión humana:** se revisaron los cambios y los resultados. Se aceptó la etapa después de obtener 14 pruebas específicas de consola aprobadas y 60 pruebas totales aprobadas.
+
+**Evidencias:** `app/main.py`, `tests/test_main.py` y `docs/decisiones.md`.
+
+## 7. Documentación relacionada
+
+- [Registro de decisiones y delegaciones](decisiones.md).
+- [Supuestos técnicos](supuestos-tecnicos.md).
+- [Instrucciones permanentes del proyecto](../AGENTS.md).
+- [README del proyecto](../README.md).
