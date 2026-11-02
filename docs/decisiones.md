@@ -42,3 +42,25 @@
 - **Verificación ejecutada:** `python -m pytest -q tests/test_main.py` y `python -m pytest -v`.
 - **Resultado de verificación:** 14 pruebas de consola aprobadas y 60 pruebas totales aprobadas.
 - **Decisión humana:** etapa 4 revisada y aceptada luego de inspeccionar el código, las pruebas y los resultados de ejecución.
+
+#### Verificación manual de la aplicación
+
+Se realizó una prueba manual de la aplicación mediante el comando `python -m app.main`.
+
+**Resultado:** las nueve comprobaciones realizadas finalizaron correctamente.
+
+| Prueba | Resultado |
+|---|---|
+| Persistencia después de reiniciar la aplicación | Aprobada |
+| Reserva consecutiva en el mismo equipo | Aprobada |
+| Reservas simultáneas en equipos diferentes | Aprobada |
+| Rechazo de equipo inexistente | Aprobada |
+| Rechazo de solicitante vacío o con espacios | Aprobada |
+| Rechazo de intervalo con inicio posterior al fin | Aprobada |
+| Rechazo de cancelar una reserva ya cancelada | Aprobada |
+| Rechazo de cancelar una reserva inexistente | Aprobada |
+| Salida normal del sistema | Aprobada |
+
+También se comprobó manualmente que una reserva cancelada libera su intervalo y permite crear otra reserva en el mismo horario.
+
+**Decisión humana:** se acepta la integración de la interfaz luego de verificar los flujos principales, las reglas de negocio y la persistencia de los datos.
